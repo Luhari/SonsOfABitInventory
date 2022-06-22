@@ -52,6 +52,7 @@ public class Inventory : MonoBehaviour
         {
             inventoryItems.Add(item);
             uiInventory.AddNewItem(item);
+            accWeight += item.weight;
         }
         else
         {
