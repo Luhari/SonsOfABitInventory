@@ -116,7 +116,9 @@ namespace Inventory
 
         private void HandleSwapItems(int index1, int index2)
         {
-            // inventoryData.SwapItems(index1, index2);
+            inventoryData.SwapItems(index1, index2);
+            uiInventory.UpdateSlot(index1, inventoryData.GetItemAt(index1).item?.texture);
+            uiInventory.UpdateSlot(index2, inventoryData.GetItemAt(index2).item?.texture);
         }
 
         private void HandleDragging(int obj)

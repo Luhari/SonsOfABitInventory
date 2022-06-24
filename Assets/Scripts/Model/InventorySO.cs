@@ -19,6 +19,10 @@ namespace Inventory.Model
 
         private float accWeight { get; set; } = 0;
 
+        public int getSize() => size;
+        public float getLimitWeight() => limitWeight;
+        public float getAccWeight() => accWeight;
+
         public void Init()
         {
             accWeight = 0;
@@ -114,13 +118,17 @@ namespace Inventory.Model
         private bool CanAddItem(Item item) => item.weight + accWeight <= limitWeight;
         private bool IsInventoryFull() => inventoryItems.FindIndex(item => item.isEmpty) == -1;
 
-        public int getSize() => size;
-        public float getLimitWeight() => limitWeight;
-        public float getAccWeight() => accWeight;
 
-        internal void SwapItems(int index1, int index2)
+        public void SwapItems(int index1, int index2)
         {
-            throw new NotImplementedException();
+            InventoryItem item1 = inventoryItems[index1];
+
+            InventoryItem item2 = inventoryItems[index2];
+            
+            Item aux = item2.item;
+
+            inventoryItems[index2].setItem(item1.item);
+            inventoryItems[index1].setItem(aux);
         }
     }
 
