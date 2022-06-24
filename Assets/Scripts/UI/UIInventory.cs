@@ -25,8 +25,11 @@ namespace Inventory.UI
         private TMPro.TextMeshProUGUI textCurrentWeight;
         [SerializeField]
         private TMPro.TextMeshProUGUI textLimitWeight;
+        [SerializeField]
+        private TMPro.TextMeshProUGUI textCoins;
 
-        public event Action<int> OnItemAction, OnStartDragging, OnItemHoverStart, OnItemHoverEnd, OnItemRemoval;
+        public event Action<int> OnItemAction, OnStartDragging, OnItemHoverStart, OnItemHoverEnd, 
+            OnItemRemoval, OnItemSold;
 
         public event Action<int, int> OnSwapItems;
 
@@ -59,6 +62,11 @@ namespace Inventory.UI
                 uiItem.OnItemHoverStart += HandleItemHoverStart;
                 uiItem.OnItemHoverEnd += HandleItemHoverEnd;
             }
+        }
+
+        public void HandleItemDropOnSell()
+        {
+            OnItemSold?.Invoke(currentlyDraggedItemIndex);
         }
 
         public void HandleItemDropOnTrash()
@@ -109,6 +117,16 @@ namespace Inventory.UI
             OnItemAction?.Invoke(uiItems.FindIndex(i => i.GetInstanceID() == item.GetInstanceID()));
         }
 
+        public void UpdateAccWeight(float value)
+        {
+            textCurrentWeight.text = value.ToString();
+        }
+
+        public void UpdateCoins(float value)
+        {
+            textCoins.text = value.ToString();
+        }
+
         /// <summary>
         /// Updates the texture of the slot in position <paramref name="slot"/> with the sprite of <paramref name="item"/>
         /// </summary>
@@ -128,9 +146,8 @@ namespace Inventory.UI
         /// and returns the position of the slot
         /// </summary>
         /// <param name="item">Item to be added</param>
-        public void AddNewItem(Sprite image, float accWeight)
+        public void AddNewItem(Sprite image)
         {
-            textCurrentWeight.text = accWeight.ToString();
             UpdateSlot(uiItems.FindIndex(i => i.isEmpty()), image);
         }
 
@@ -139,9 +156,8 @@ namespace Inventory.UI
         /// and returns the position of the slot
         /// </summary>
         /// <param name="item">Item to remove</param>
-        public void RemoveItem(UIItem item, float accWeight)
+        public void RemoveItem(UIItem item)
         {
-            textCurrentWeight.text = accWeight.ToString();
             UpdateSlot(uiItems.FindIndex(i => i.GetInstanceID() == item.GetInstanceID()), null);
         }
 
@@ -149,9 +165,8 @@ namespace Inventory.UI
         /// Removes from UI the item that is at position <paramref name="slot"/>
         /// </summary>
         /// <param name="slot">Index of the slot from <see cref="uiItems"/></param>
-        public void RemoveItem(int slot, float accWeight)
+        public void RemoveItem(int slot)
         {
-            textCurrentWeight.text = accWeight.ToString();
             UpdateSlot(slot, null);
         }
 

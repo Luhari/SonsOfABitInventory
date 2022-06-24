@@ -18,14 +18,19 @@ namespace Inventory.Model
         private float limitWeight { get; set; } = 100;
 
         private float accWeight { get; set; } = 0;
+        private float coins { get; set; } = 0;
 
         public int getSize() => size;
         public float getLimitWeight() => limitWeight;
         public float getAccWeight() => accWeight;
+        public float getCoins() => coins;
+
+        public event Action<float> OnAccWeightUpdated, OnCoinsUpdated;
 
         public void Init()
         {
             accWeight = 0;
+            coins = 0;
 
             inventoryItems = new List<InventoryItem>();
             for (int i = 0; i < size; ++i)
@@ -58,6 +63,7 @@ namespace Inventory.Model
                     {
                         inventoryItems[i].setItem(item);
                         accWeight += item.weight;
+                        OnAccWeightUpdated?.Invoke(accWeight);
                         return true;
                     }
                 }
@@ -112,7 +118,33 @@ namespace Inventory.Model
             if (index == -1) return;
 
             accWeight -= inventoryItems[index].item.weight;
+            OnAccWeightUpdated?.Invoke(accWeight);
             inventoryItems[index].setItem(null);
+        }
+
+        public bool Sell(Item itemToFind)
+        {
+            int index = inventoryItems.FindIndex(item => item.item.Equals(itemToFind));
+            return Sell(index);
+        }
+
+        public bool Sell(int index)
+        {
+            if (index == -1) return false;
+
+            if (inventoryItems[index].item.GetType() == typeof(Weapon) ||
+                inventoryItems[index].item.GetType() == typeof(ResourceItem))
+            {
+                accWeight -= inventoryItems[index].item.weight;
+                OnAccWeightUpdated?.Invoke(accWeight);
+                coins += inventoryItems[index].item.marketValue;
+                OnCoinsUpdated?.Invoke(coins);
+                inventoryItems[index].setItem(null);
+
+                return true;
+            }
+
+            return false;
         }
 
         private bool CanAddItem(Item item) => item.weight + accWeight <= limitWeight;
