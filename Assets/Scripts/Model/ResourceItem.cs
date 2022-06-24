@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -24,10 +25,23 @@ namespace Inventory.Model
         /// <param name="texture">Name of the png to use as sprite</param>
         /// <param name="timeBetweenDeteriorLevel">Time in seconds between levels of deterioration</param>
         /// <param name="marketValueLostAtDeterioring">Market value to lose after reaching another level of deterioration</param>
-        public ResourceItem(ItemId id, string name, float weight, string texture, float timeBetweenDeteriorLevel, float marketValueLostAtDeterioring, int maxDeteriorationLevel) : base(id, name, weight, timeBetweenDeteriorLevel, maxDeteriorationLevel)
+        public ResourceItem(ItemId id, string name, float weight, string texture, float timeBetweenDeteriorLevel, float marketValueLostAtDeterioring, int maxDeteriorationLevel, float marketValue) 
+            : base(id, name, weight, timeBetweenDeteriorLevel, maxDeteriorationLevel, marketValue)
         {
             this.marketValueLostAtDeterioring = marketValueLostAtDeterioring;
             this.texture = Resources.Load<Sprite>("Sprites/Items/" + texture);
+        }
+
+        public ResourceItem(ResourceItem item) 
+            : base(item.id, item.name, item.weight, item.timeBetweenDeteriorationLevel, item.maxDeteriorationLevel, item.marketValue)
+        {
+            this.marketValueLostAtDeterioring = item.marketValueLostAtDeterioring;
+            this.texture = item.texture;
+        }
+
+        public override Item Clone()
+        {
+            return new ResourceItem(this);
         }
 
         /// <summary>

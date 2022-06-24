@@ -30,6 +30,19 @@ namespace Inventory.Model
             this.action = action;
         }
 
+        public ConsumableItem(ConsumableItem item) : 
+            base(item.id, item.name, item.weight, item.timeBetweenDeteriorationLevel, item.maxDeteriorationLevel)
+        {
+            this.texture = item.texture;
+            this.marketValue = item.marketValue;
+            this.action = item.action;
+        }
+
+        public override Item Clone()
+        {
+            return new ConsumableItem(this);
+        }
+
         /// <summary>
         /// Performs <see cref="action"/> at using the consumable
         /// </summary>

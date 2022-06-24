@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -15,7 +16,6 @@ namespace Inventory.Model
         public override float marketValue { get; protected set; }
         public override float weight { get; protected set; }
         public override Sprite texture { get; protected set; }
-        public override string textureName { get; protected set; }
 
         /// <summary>
         /// Constructor of a TrashItem
@@ -30,7 +30,25 @@ namespace Inventory.Model
             this.weight = weight;
             marketValue = 0;
             texture = Resources.Load<Sprite>("Sprites/Items/trash");
-            textureName = "trash";
+        }
+
+        public TrashItem(TrashItem item) 
+        {
+            this.id = item.id;
+            this.name = item.name;
+            this.weight = item.weight;
+            this.marketValue = item.marketValue;
+            this.texture = item.texture;
+        }
+
+        public override Item Clone()
+        {
+            return new TrashItem(this);
+        }
+
+        public void SetWeight(float weight)
+        {
+            this.weight = weight;
         }
     }
 }

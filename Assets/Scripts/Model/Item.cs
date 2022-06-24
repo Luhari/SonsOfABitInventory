@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -15,6 +16,7 @@ namespace Inventory.Model
         public abstract float weight { get; protected set; }
         public abstract float marketValue { get; protected set; }
         public abstract Sprite texture { get; protected set; }
-        public abstract string textureName { get; protected set; }
+
+        public abstract Item Clone();
     }
 }

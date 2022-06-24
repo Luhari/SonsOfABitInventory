@@ -1,3 +1,4 @@
+using Inventory.Model;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -58,12 +59,12 @@ namespace Inventory.UI
 
         private void HandleItemHoverEnd(UIItem item)
         {
-            OnItemHoverEnd?.Invoke(uiItems.FindIndex(i => i.Equals(item)));
+            OnItemHoverEnd?.Invoke(uiItems.FindIndex(i => i.GetInstanceID() == item.GetInstanceID()));
         }
 
         private void HandleItemHoverStart(UIItem item)
         {
-            OnItemHoverStart?.Invoke(uiItems.FindIndex(i => i.Equals(item)));
+            OnItemHoverStart?.Invoke(uiItems.FindIndex(i => i.GetInstanceID() == item.GetInstanceID()));
         }
 
         private void HandleEndDrag(UIItem item)
@@ -85,7 +86,7 @@ namespace Inventory.UI
 
         private void HandleItemAction(UIItem item)
         {
-            OnItemAction?.Invoke(uiItems.FindIndex(i => i.Equals(item)));
+            OnItemAction?.Invoke(uiItems.FindIndex(i => i.GetInstanceID() == item.GetInstanceID()));
         }
 
         /// <summary>
@@ -119,7 +120,7 @@ namespace Inventory.UI
         /// <param name="item">Item to remove</param>
         public void RemoveItem(UIItem item)
         {
-            UpdateSlot(uiItems.FindIndex(i => i.Equals(item)), null);
+            UpdateSlot(uiItems.FindIndex(i => i.GetInstanceID() == item.GetInstanceID()), null);
         }
 
         /// <summary>

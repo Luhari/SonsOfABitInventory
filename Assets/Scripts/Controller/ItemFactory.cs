@@ -46,15 +46,28 @@ namespace Inventory
         {
             database = new List<Item>()
             {
-                new Weapon(ItemId.SWORD, "Sword", 10f, 1f, "sword", 1f),
-                new Weapon(ItemId.BOW, "Bow", 1f, 1f, "bow", 1f),
-                new ConsumableItem(ItemId.HEALTH_POTION, "Health Potion", 
-                    1f, "healthPotion0", 1f, 3, new UseHealthPotion(10f)),
-                new ConsumableItem(ItemId.MANA_POTION, "Mana Potion", 
-                    1f, "manaPotion0", 1f, 3, new UseManaPotion(1f)),
-                new ResourceItem(ItemId.ARROW, "Arrow", 1f, "arrow0", 1f, 1f, 3),
-                new ResourceItem(ItemId.WOOD, "Wood", 1f, "wood0", 1f, 1f, 3),
-                new TrashItem(ItemId.TRASH, "Trash", 1f),
+                new Weapon(
+                    id: ItemId.SWORD, name : "Sword", weight: 10f, marketValue: 1f, texture: "sword",
+                    dps: 1f),
+                new Weapon(id: ItemId.BOW, name: "Bow", weight: 1f, marketValue: 1f, texture: "bow",
+                    dps: 1f),
+                new ConsumableItem(id: ItemId.HEALTH_POTION, name: "Health Potion", weight: 3f, texture: "healthPotion0",
+                    timeBetweenDeteriorationLevel: 1f, 
+                    maxDeteriorationLevel: 3, 
+                    action: new UseHealthPotion(10f)),
+                new ConsumableItem(id: ItemId.MANA_POTION, name: "Mana Potion", weight: 1f, texture: "manaPotion0",
+                    timeBetweenDeteriorationLevel: 3f,
+                    maxDeteriorationLevel: 3, 
+                    action: new UseManaPotion(1f)),
+                new ResourceItem(id: ItemId.ARROW, name: "Arrow", weight: 1f, marketValue: 10f, texture: "arrow0", 
+                    timeBetweenDeteriorLevel: 60f, 
+                    marketValueLostAtDeterioring: 1f, 
+                    maxDeteriorationLevel: 3),
+                new ResourceItem(id: ItemId.WOOD, name: "Wood", weight: 1f, marketValue: 10f, texture: "wood0", 
+                    timeBetweenDeteriorLevel: 3f, 
+                    marketValueLostAtDeterioring: 1f, 
+                    maxDeteriorationLevel: 3),
+                new TrashItem(id: ItemId.TRASH, name: "Trash", weight: 1f),
             };
 
             List<(ItemId, Sprite)> addMenu = database.ConvertAll(new Converter<Item, (ItemId itemId, Sprite sprite)>(ItemToItemIdSprite));
@@ -63,7 +76,9 @@ namespace Inventory
 
         public Item generateById(ItemId id)
         {
-            return database.Find(item => item.id == id);
+            Item databaseItem =  database.Find(item => item.id == id);
+
+            return databaseItem.Clone();
         }
 
         /// <summary>

@@ -30,6 +30,14 @@ namespace Inventory.Model
             }
         }
 
+        public List<InventoryItem> getAllDeteriorableItems()
+        {
+            return inventoryItems.FindAll(item =>
+                !item.isEmpty &&
+                item.item.GetType().IsSubclassOf(typeof(DeteriorableItem))
+                );
+        }
+
         /// <summary>
         /// If the new item doesn't surpass the weight limit and the inventory has a empty slot
         /// adds the item to the first empty slot
@@ -54,7 +62,7 @@ namespace Inventory.Model
         }
 
         /// <summary>
-        /// Returns dictionary where the key is the invetory position and the value is the <see cref="InventoryItem"/>
+        /// Returns dictionary where the key is the inventory position and the value is the <see cref="InventoryItem"/>
         /// </summary>
         /// <returns></returns>
         public Dictionary<int, InventoryItem> GetInventoryItemsWithSlotPosition()
@@ -67,6 +75,13 @@ namespace Inventory.Model
             return items;
         }
 
+        public void ReplaceItem(Item itemToReplace, Item newItem)
+        {
+            int index = FindItemIndex(itemToReplace);
+            Remove(index);
+            inventoryItems[index].setItem(newItem);
+        }
+
         public InventoryItem GetItemAt(int itemIndex)
         {
             return inventoryItems[itemIndex];
@@ -76,6 +91,11 @@ namespace Inventory.Model
         {
             return inventoryItems.Find(item => item.item.Equals(itemToFind)).item;
         }
+        public int FindItemIndex(Item itemToFind)
+        {
+            return inventoryItems.FindIndex(item => item.item.Equals(itemToFind));
+        }
+
         public int Remove(Item itemToFind)
         {
             int index = inventoryItems.FindIndex(item => item.item.Equals(itemToFind));

@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -14,7 +15,6 @@ namespace Inventory.Model
         public override float marketValue { get; protected set; }
         public override float weight { get; protected set; }
         public override Sprite texture { get; protected set; }
-        public override string textureName { get; protected set; }
 
         public float dps { get; private set; }
 
@@ -35,7 +35,21 @@ namespace Inventory.Model
             this.dps = dps;
             this.marketValue = marketValue;
             this.texture = Resources.Load<Sprite>("Sprites/Items/" + texture);
-            this.textureName = texture;
+        }
+
+        public Weapon(Weapon item)
+        {
+            this.id = item.id;
+            this.name = item.name;
+            this.weight = item.weight;
+            this.dps = item.dps;
+            this.marketValue = item.marketValue;
+            this.texture = item.texture;
+        }
+
+        public override Item Clone()
+        {
+            return new Weapon(this);
         }
     }
 }

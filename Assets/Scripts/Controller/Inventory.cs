@@ -18,6 +18,7 @@ namespace Inventory
         private InventorySO inventoryData;
         [SerializeField]
         private ItemFactory itemFactory;
+        private DeteriorationTimerController deteriorationTimerController;
 
         [SerializeField]
         private UIAddItemMenu uiAddItemMenu;
@@ -33,7 +34,7 @@ namespace Inventory
         {
             PrepareUI();
             PrepareInventoryData();
-
+            PrepareDeteriorationTimerController();
 
             uiAddItemMenu.OnAddItem += AddItem;
         }
@@ -44,6 +45,52 @@ namespace Inventory
         private void PrepareInventoryData()
         {
             inventoryData.Init();
+        }
+
+        private void PrepareDeteriorationTimerController()
+        {
+            deteriorationTimerController = GetComponent<DeteriorationTimerController>();
+            deteriorationTimerController.OnDeterioration += HandleItemDeterioration;
+        }
+
+        public void OnForceNextLevelDeteriorationClick()
+        {
+            foreach (InventoryItem item in inventoryData.getAllDeteriorableItems())
+            {
+                HandleItemDeterioration(item.item as DeteriorableItem);
+            }
+        }
+
+        private void HandleItemDeterioration(DeteriorableItem item)
+        {
+            if (item.deteriorOneLevel())
+            {
+                deteriorationTimerController.AddToTrack(item);
+                uiItemTooltip.SetInfo(item.texture, item.name, item.weight, item.marketValue);
+                uiItemTooltip.SetDeteriorationInfo(item.deteriorationLevel);
+                uiInventory.UpdateSlot(inventoryData.FindItemIndex(item), item.texture);
+            }
+            else
+            {
+                // in case of a consumable reaching the max level deterioration, replace it with a trash item
+                if (item.GetType() == typeof(ConsumableItem))
+                {
+                    TrashItem trash = itemFactory.generateById(ItemId.TRASH) as TrashItem;
+                    trash.SetWeight(item.weight);
+
+                    inventoryData.ReplaceItem(item, trash);
+                    uiInventory.UpdateSlot(inventoryData.FindItemIndex(trash), trash.texture);
+                    uiItemTooltip.SetInfo(trash.texture, trash.name, trash.weight, trash.marketValue);
+                }
+
+                // in case of a resource reaching the max level of deterioration, lose market value
+                if (item.GetType() == typeof(ResourceItem))
+                {
+                    (item as ResourceItem).loseMarketValueAtDeterioring();
+                    uiItemTooltip.SetInfo(item.texture, item.name, item.weight, item.marketValue);
+                    uiItemTooltip.SetDeteriorationInfo(item.deteriorationLevel);
+                }
+            }
         }
 
         /// <summary>
@@ -136,6 +183,10 @@ namespace Inventory
             if (inventoryData.AddItem(item))
             {
                 uiInventory.AddNewItem(item.texture);
+                if (item.GetType().IsSubclassOf(typeof(DeteriorableItem)))
+                {
+                    deteriorationTimerController.AddToTrack(item as DeteriorableItem);
+                }
             }
         }
 

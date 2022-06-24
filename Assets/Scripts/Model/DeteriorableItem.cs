@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -15,7 +16,6 @@ namespace Inventory.Model
         public override float marketValue { get; protected set; }
         public override float weight { get; protected set; }
         public override Sprite texture { get; protected set; }
-        public override string textureName { get; protected set; }
 
         /// <summary>
         /// Current deterioration level
@@ -25,11 +25,10 @@ namespace Inventory.Model
         /// Time in seconds between levels of deterioriation
         /// </summary>
         public float timeBetweenDeteriorationLevel { get; protected set; }
-        /// <summary>
-        /// Time in seconds left before the next deterioration level
-        /// </summary>
-        private float timeLeftBeforeNextDeteriorationLevel;
-        private int maxDeteriorationLevel;
+
+        public int maxDeteriorationLevel { get; protected set; }
+
+        public event Action<DeteriorableItem> OnDeterioration;
 
         /// <summary>
         /// Constructor of DeteriorableItem
@@ -39,29 +38,37 @@ namespace Inventory.Model
         /// <param name="weight">Weight of the item</param>
         /// <param name="timeBetweenDeteriorationLevel">Time in seconds between deterioration levels</param>
         /// <param name="maxDeteriorationLevel">Max deterioration level</param>
-        public DeteriorableItem(ItemId id, string name, float weight, float timeBetweenDeteriorationLevel, int maxDeteriorationLevel)
+        public DeteriorableItem(ItemId id, string name, float weight, float timeBetweenDeteriorationLevel, int maxDeteriorationLevel, float marketValue = 0)
         {
             this.id = id;
             this.name = name;
             this.weight = weight;
             deteriorationLevel = 0;
             this.timeBetweenDeteriorationLevel = timeBetweenDeteriorationLevel;
-            timeLeftBeforeNextDeteriorationLevel = timeBetweenDeteriorationLevel;
             this.maxDeteriorationLevel = maxDeteriorationLevel;
+            this.marketValue = marketValue;
         }
 
         /// <summary>
-        /// 
+        /// Forces one deterioration level and updates the texture of the item and returns true
+        /// if the item can deterior another level
         /// </summary>
-        public void forceOneDeteriorLevel()
+        public bool deteriorOneLevel()
         {
             if (++deteriorationLevel <= maxDeteriorationLevel)
             {
-                timeLeftBeforeNextDeteriorationLevel = timeBetweenDeteriorationLevel;
-                // Here restart timer
+                Sprite currentTexture = this.texture;
+
+                this.texture = Resources.Load<Sprite>("Sprites/Items/" + currentTexture.name.Substring(0, currentTexture.name.Length -1) + deteriorationLevel);
+
+                // OnDeterioration?.Invoke(this);
             }
+            return deteriorationLevel < maxDeteriorationLevel;
         }
 
-        // add timer to manage deterioration level
+        public override Item Clone()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

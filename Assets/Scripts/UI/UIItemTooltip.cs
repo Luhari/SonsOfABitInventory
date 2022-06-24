@@ -49,12 +49,15 @@ namespace Inventory.UI
         /// <param name="marketValue">Market Value of the item</param>
         public void SetInfo(Sprite sprite, string name, float weight, float marketValue) 
         {
-            item.SetItemImage(sprite);
-            nameLabel.GetComponent<TMPro.TextMeshProUGUI>().text = name;
-            SetStatLabel(weightLabel, weight.ToString());
-            SetStatLabel(marketValueLabel, marketValue.ToString());
+            if (gameObject.activeSelf)
+            {
+                item.SetItemImage(sprite);
+                nameLabel.GetComponent<TMPro.TextMeshProUGUI>().text = name;
+                SetStatLabel(weightLabel, weight.ToString());
+                SetStatLabel(marketValueLabel, marketValue.ToString());
 
-            deteriorationLevelLabel.SetActive(false);
+                deteriorationLevelLabel.SetActive(false);
+            }
         }
 
         public void SetDeteriorationInfo(int deteriorationLevel)
