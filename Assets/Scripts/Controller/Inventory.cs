@@ -98,13 +98,29 @@ namespace Inventory
         /// </summary>
         private void PrepareUI()
         {
-            uiInventory.InitUIInventory(inventoryData.getSize());
+            uiInventory.InitUIInventory(inventoryData.getSize(), inventoryData.getLimitWeight());
             uiInventory.OnItemAction += HandleUseItem;
             uiInventory.OnItemHoverStart += HandleItemHoverStart;
             uiInventory.OnItemHoverEnd += HandleItemHoverEnd;
-            // uiInventory.OnStartDragging += HandleDragging;
-            // uiInventory.OnSwapItems += HandleSwapItems;
+            uiInventory.OnStartDragging += HandleDragging;
+            uiInventory.OnSwapItems += HandleSwapItems;
+            uiInventory.OnItemRemoval += HandleItemRemoval;
 
+            uiItemTooltip.Hide();
+        }
+
+        private void HandleItemRemoval(int itemIndex)
+        {
+            RemoveItem(itemIndex);
+        }
+
+        private void HandleSwapItems(int index1, int index2)
+        {
+            // inventoryData.SwapItems(index1, index2);
+        }
+
+        private void HandleDragging(int obj)
+        {
             uiItemTooltip.Hide();
         }
 
@@ -182,7 +198,7 @@ namespace Inventory
         {
             if (inventoryData.AddItem(item))
             {
-                uiInventory.AddNewItem(item.texture);
+                uiInventory.AddNewItem(item.texture, inventoryData.getAccWeight());
                 if (item.GetType().IsSubclassOf(typeof(DeteriorableItem)))
                 {
                     deteriorationTimerController.AddToTrack(item as DeteriorableItem);
@@ -196,7 +212,7 @@ namespace Inventory
             if (item != null)
             {
                 int index = inventoryData.Remove(item);
-                if (index != -1) uiInventory.RemoveItem(index);
+                if (index != -1) uiInventory.RemoveItem(index, inventoryData.getAccWeight());
             }
         }
 
@@ -205,7 +221,7 @@ namespace Inventory
             if (index != -1)
             {
                 inventoryData.Remove(index);
-                if (index != -1) uiInventory.RemoveItem(index);
+                if (index != -1) uiInventory.RemoveItem(index, inventoryData.getAccWeight());
             }
         }
     }

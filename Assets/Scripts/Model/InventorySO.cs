@@ -105,17 +105,23 @@ namespace Inventory.Model
 
         public void Remove(int index)
         {
-            if (index != -1)
-            {
-                inventoryItems[index].setItem(null);
-            }
+            if (index == -1) return;
+
+            accWeight -= inventoryItems[index].item.weight;
+            inventoryItems[index].setItem(null);
         }
 
         private bool CanAddItem(Item item) => item.weight + accWeight <= limitWeight;
         private bool IsInventoryFull() => inventoryItems.FindIndex(item => item.isEmpty) == -1;
 
         public int getSize() => size;
+        public float getLimitWeight() => limitWeight;
+        public float getAccWeight() => accWeight;
 
+        internal void SwapItems(int index1, int index2)
+        {
+            throw new NotImplementedException();
+        }
     }
 
     /// <summary>

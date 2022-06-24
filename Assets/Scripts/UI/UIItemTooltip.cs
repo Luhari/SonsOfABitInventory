@@ -36,7 +36,7 @@ namespace Inventory.UI
                         canvas.worldCamera,
                         out position
                     );
-                transform.position = canvas.transform.TransformPoint(position);
+                transform.position = canvas.transform.TransformPoint(position + new Vector2(10, 0));
             }
         }
 

@@ -21,26 +21,30 @@ namespace Inventory.UI
         [SerializeField]
         private MouseFollower mouseFollower;
 
+        [SerializeField]
+        private TMPro.TextMeshProUGUI textCurrentWeight;
+        [SerializeField]
+        private TMPro.TextMeshProUGUI textLimitWeight;
 
-        public event Action<int> OnItemAction, OnStartDragging, OnItemHoverStart, OnItemHoverEnd;
+        public event Action<int> OnItemAction, OnStartDragging, OnItemHoverStart, OnItemHoverEnd, OnItemRemoval;
 
         public event Action<int, int> OnSwapItems;
 
+        private int currentlyDraggedItemIndex = -1;
+
         private void Awake()
         {
-
-
-            mouseFollower.SetActive(false);   
-
-
+            mouseFollower.Hide(); 
         }
 
         /// <summary>
         /// Creates <paramref name="inventorySize"/> inventory slots and registers its <see cref="UIItem"/> events
         /// </summary>
         /// <param name="inventorySize"></param>
-        public void InitUIInventory(int inventorySize)
+        public void InitUIInventory(int inventorySize, float limitWeight)
         {
+            textLimitWeight.text = limitWeight.ToString();
+
             for (int i = 0; i < inventorySize; ++i)
             {
                 var slotItemInstance = Instantiate(slotItemPrefab);
@@ -57,6 +61,11 @@ namespace Inventory.UI
             }
         }
 
+        public void HandleItemDropOnTrash()
+        {
+            OnItemRemoval?.Invoke(currentlyDraggedItemIndex);
+        }
+
         private void HandleItemHoverEnd(UIItem item)
         {
             OnItemHoverEnd?.Invoke(uiItems.FindIndex(i => i.GetInstanceID() == item.GetInstanceID()));
@@ -69,19 +78,30 @@ namespace Inventory.UI
 
         private void HandleEndDrag(UIItem item)
         {
-            mouseFollower.SetActive(false);
+            ResetDraggedItem();
         }
 
         private void HandleSwapItems(UIItem item)
         {
-            // TODO
-            // OnSwapItems?.Invoke()
+            int index = uiItems.FindIndex(i => i.GetInstanceID() == item.GetInstanceID());
+            if (index == -1) return;
+            OnSwapItems?.Invoke(currentlyDraggedItemIndex, index);
         }
 
         private void HandleBeginDrag(UIItem item)
         {
+            int index = uiItems.FindIndex(i => i.GetInstanceID() == item.GetInstanceID());
+            if (index == -1) return;
+            currentlyDraggedItemIndex = index;
             mouseFollower.SetImage(item.GetSprite());
-            mouseFollower.SetActive(true);
+            mouseFollower.Show();
+            OnStartDragging?.Invoke(index);
+        }
+
+        private void ResetDraggedItem()
+        {
+            mouseFollower.Hide();
+            currentlyDraggedItemIndex = -1;
         }
 
         private void HandleItemAction(UIItem item)
@@ -108,8 +128,9 @@ namespace Inventory.UI
         /// and returns the position of the slot
         /// </summary>
         /// <param name="item">Item to be added</param>
-        public void AddNewItem(Sprite image)
+        public void AddNewItem(Sprite image, float accWeight)
         {
+            textCurrentWeight.text = accWeight.ToString();
             UpdateSlot(uiItems.FindIndex(i => i.isEmpty()), image);
         }
 
@@ -118,8 +139,9 @@ namespace Inventory.UI
         /// and returns the position of the slot
         /// </summary>
         /// <param name="item">Item to remove</param>
-        public void RemoveItem(UIItem item)
+        public void RemoveItem(UIItem item, float accWeight)
         {
+            textCurrentWeight.text = accWeight.ToString();
             UpdateSlot(uiItems.FindIndex(i => i.GetInstanceID() == item.GetInstanceID()), null);
         }
 
@@ -127,9 +149,10 @@ namespace Inventory.UI
         /// Removes from UI the item that is at position <paramref name="slot"/>
         /// </summary>
         /// <param name="slot">Index of the slot from <see cref="uiItems"/></param>
-        public void RemoveItem(int slot)
+        public void RemoveItem(int slot, float accWeight)
         {
-           UpdateSlot(slot, null);
+            textCurrentWeight.text = accWeight.ToString();
+            UpdateSlot(slot, null);
         }
 
         public void Show()

@@ -1,21 +1,22 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Inventory.UI
 {
     public class MouseFollower : MonoBehaviour
     {
         private Canvas canvas;
-        private UIItem item;
+        private Image item;
 
-        void Awake()
+        public void Awake()
         {
             canvas = transform.root.GetComponent<Canvas>();
-            item = GetComponentInChildren<UIItem>();
+            item = GetComponentsInChildren<Image>()[1];
         }
 
-        private void Update()
+        public void Update()
         {
             Vector2 position;
             RectTransformUtility.ScreenPointToLocalPointInRectangle(
@@ -29,12 +30,22 @@ namespace Inventory.UI
 
         public void SetImage(Sprite sprite)
         {
-            item.SetItemImage(sprite);
+            if (item == null)
+            {
+                item = GetComponentsInChildren<Image>()[1];
+            }
+
+            item.sprite = sprite;
         }
 
-        public void SetActive(bool active)
+        public void Show()
         {
-            gameObject.SetActive(active);
+            gameObject.SetActive(true);
+        }
+
+        public void Hide()
+        {
+            gameObject.SetActive(false);
         }
     }
 }

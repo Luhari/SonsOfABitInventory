@@ -13,7 +13,7 @@ namespace Inventory.UI
     /// </summary>
     public class UIItem : MonoBehaviour, 
         IPointerClickHandler, IBeginDragHandler, IDropHandler, IEndDragHandler, 
-        IPointerEnterHandler, IPointerExitHandler
+        IPointerEnterHandler, IPointerExitHandler, IDragHandler
     {
         // Image child of the SlotItemPrefab that will show the texture of the item
         private Image image;
@@ -101,6 +101,12 @@ namespace Inventory.UI
         {
             if (empty) return;
             OnItemHoverEnd?.Invoke(this);
+        }
+
+        // without it doesn't detect on begindrag...
+        public void OnDrag(PointerEventData eventData)
+        {
+            
         }
     }
 }
