@@ -1,45 +1,90 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-/// <summary>
-/// Class to manage the UI for an Item in a Slot of the inventory
-/// </summary>
-public class UIItem : MonoBehaviour
+
+namespace Inventory.UI
 {
     /// <summary>
-    /// Item of the slot
+    /// Class to manage the UI for an Item in a Slot of the inventory
     /// </summary>
-    public Item item = null;
-    /// <summary>
-    /// Image child of the SlotPrefab that will show the texture of the item
-    /// </summary>
-    private Image image;
-
-    void Awake()
+    public class UIItem : MonoBehaviour, IPointerClickHandler, IBeginDragHandler, IDropHandler, IEndDragHandler
     {
-        image = GetComponent<Image>();
-        UpdateTexture(null);
-    }
+        // Image child of the SlotItemPrefab that will show the texture of the item
+        private Image image;
 
-    /// <summary>
-    /// If the slot has an item, populates <see cref="item"/> with <paramref name="item"/> 
-    /// and <see cref="image"/> with <paramref name="item.texture"/>
-    /// Otherwise <see cref="item"/> is null and <see cref="image"/> is transparent
-    /// </summary>
-    /// <param name="item">The item of the slot</param>
-    public void UpdateTexture(Item item)
-    {
-        this.item = item;
-        if (this.item != null)
+        private bool empty = true;
+
+        public event Action<UIItem> OnRightMouseBtnClick,
+            OnItemBeginDrag, OnItemDropped, OnItemEndDrag;
+
+        public void Awake()
         {
-            image.color = Color.white;
-            image.sprite = this.item.texture;
-        } 
-        else
+            image = GetComponentsInChildren<Image>()[1];
+            EmptySlot();
+        }
+
+        public bool isEmpty()
         {
-            image.color = Color.clear;
+            return empty;
+        }
+
+        public Sprite GetSprite()
+        {
+            return image.sprite;
+        }
+
+        /// <summary>
+        /// Disable the item's image and sets <see cref="empty"/> to true
+        /// </summary>
+        public void EmptySlot()
+        {
+            image.enabled = false;
+            empty = true;
+        }
+
+        /// <summary>
+        /// Enables the item's image and sets <see cref="empty"/> to false
+        /// </summary>
+        public void SetItemImage(Sprite sprite)
+        {
+            image.sprite = sprite;
+            image.enabled = true;
+            empty = false;
+        }
+
+        /// <summary>
+        /// If the <see cref="UIItem"/> is empty, does nothing. If is not empty and it has been
+        /// right clicked, invokes <see cref="OnRightMouseBtnClick"/> event
+        /// </summary>
+        /// <param name="eventData"></param>
+        public void OnPointerClick(PointerEventData eventData)
+        {
+            if (empty) return;
+
+            if (eventData.button == PointerEventData.InputButton.Right)
+            {
+                OnRightMouseBtnClick?.Invoke(this);
+            }
+        }
+
+        public void OnBeginDrag(PointerEventData eventData)
+        {
+            if (empty) return;
+            OnItemBeginDrag?.Invoke(this);
+        }
+
+        public void OnDrop(PointerEventData eventData)
+        {
+            OnItemDropped?.Invoke(this);
+        }
+
+        public void OnEndDrag(PointerEventData eventData)
+        {
+            OnItemEndDrag?.Invoke(this);
         }
     }
 }
