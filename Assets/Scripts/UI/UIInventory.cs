@@ -18,12 +18,19 @@ namespace Inventory.UI
         [SerializeField]
         private Transform slotsPanelTransform;
         [SerializeField]
-        public event Action<int> OnItemAction, OnStartDragging;
+        private MouseFollower mouseFollower;
+
+
+        public event Action<int> OnItemAction, OnStartDragging, OnItemHoverStart, OnItemHoverEnd;
 
         public event Action<int, int> OnSwapItems;
 
         private void Awake()
         {
+
+
+            mouseFollower.SetActive(false);   
+
 
         }
 
@@ -44,11 +51,24 @@ namespace Inventory.UI
                 uiItem.OnItemBeginDrag += HandleBeginDrag;
                 uiItem.OnItemDropped += HandleSwapItems;
                 uiItem.OnItemEndDrag += HandleEndDrag;
+                uiItem.OnItemHoverStart += HandleItemHoverStart;
+                uiItem.OnItemHoverEnd += HandleItemHoverEnd;
             }
+        }
+
+        private void HandleItemHoverEnd(UIItem item)
+        {
+            OnItemHoverEnd?.Invoke(uiItems.FindIndex(i => i.Equals(item)));
+        }
+
+        private void HandleItemHoverStart(UIItem item)
+        {
+            OnItemHoverStart?.Invoke(uiItems.FindIndex(i => i.Equals(item)));
         }
 
         private void HandleEndDrag(UIItem item)
         {
+            mouseFollower.SetActive(false);
         }
 
         private void HandleSwapItems(UIItem item)
@@ -59,6 +79,8 @@ namespace Inventory.UI
 
         private void HandleBeginDrag(UIItem item)
         {
+            mouseFollower.SetImage(item.GetSprite());
+            mouseFollower.SetActive(true);
         }
 
         private void HandleItemAction(UIItem item)

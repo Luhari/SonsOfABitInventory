@@ -20,7 +20,7 @@ namespace Inventory.Model
         /// <summary>
         /// Current deterioration level
         /// </summary>
-        public float deteriorationLevel { get; protected set; }
+        public int deteriorationLevel { get; protected set; }
         /// <summary>
         /// Time in seconds between levels of deterioriation
         /// </summary>

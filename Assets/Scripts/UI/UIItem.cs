@@ -11,7 +11,9 @@ namespace Inventory.UI
     /// <summary>
     /// Class to manage the UI for an Item in a Slot of the inventory
     /// </summary>
-    public class UIItem : MonoBehaviour, IPointerClickHandler, IBeginDragHandler, IDropHandler, IEndDragHandler
+    public class UIItem : MonoBehaviour, 
+        IPointerClickHandler, IBeginDragHandler, IDropHandler, IEndDragHandler, 
+        IPointerEnterHandler, IPointerExitHandler
     {
         // Image child of the SlotItemPrefab that will show the texture of the item
         private Image image;
@@ -19,7 +21,9 @@ namespace Inventory.UI
         private bool empty = true;
 
         public event Action<UIItem> OnRightMouseBtnClick,
-            OnItemBeginDrag, OnItemDropped, OnItemEndDrag;
+            OnItemBeginDrag, OnItemDropped, OnItemEndDrag,
+            OnItemHoverStart, OnItemHoverEnd;
+
 
         public void Awake()
         {
@@ -85,6 +89,18 @@ namespace Inventory.UI
         public void OnEndDrag(PointerEventData eventData)
         {
             OnItemEndDrag?.Invoke(this);
+        }
+
+        public void OnPointerEnter(PointerEventData eventData)
+        {
+            if (empty) return;
+            OnItemHoverStart?.Invoke(this);
+        }
+
+        public void OnPointerExit(PointerEventData eventData)
+        {
+            if (empty) return;
+            OnItemHoverEnd?.Invoke(this);
         }
     }
 }

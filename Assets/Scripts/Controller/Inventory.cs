@@ -21,8 +21,12 @@ namespace Inventory
 
         [SerializeField]
         private UIAddItemMenu uiAddItemMenu;
+        [SerializeField]
+        private UIItemTooltip uiItemTooltip;
 
         public event Action<InventoryItem> OnUseItem;
+
+        private bool showingItemTooltip = false;
 
 
         private void Awake()
@@ -35,22 +39,75 @@ namespace Inventory
         }
 
         /// <summary>
+        /// Inits <see cref="inventoryData"/>
+        /// </summary>
+        private void PrepareInventoryData()
+        {
+            inventoryData.Init();
+        }
+
+        /// <summary>
         /// Inits UI Inventory with empty slots and events listners for <see cref="uiInventory"/>
         /// </summary>
         private void PrepareUI()
         {
             uiInventory.InitUIInventory(inventoryData.getSize());
             uiInventory.OnItemAction += HandleUseItem;
+            uiInventory.OnItemHoverStart += HandleItemHoverStart;
+            uiInventory.OnItemHoverEnd += HandleItemHoverEnd;
             // uiInventory.OnStartDragging += HandleDragging;
             // uiInventory.OnSwapItems += HandleSwapItems;
+
+            uiItemTooltip.Hide();
+        }
+
+        private void HandleItemHoverEnd(int itemIndex)
+        {
+            if (showingItemTooltip)
+            {
+                showingItemTooltip = false;
+                uiItemTooltip.Hide();
+            }
+        }
+
+        private void HandleItemHoverStart(int itemIndex)
+        {
+            if (!showingItemTooltip)
+            {
+                showingItemTooltip = true;
+                uiItemTooltip.Show();
+                InventoryItem inventoryItem = inventoryData.GetItemAt(itemIndex);
+
+                uiItemTooltip.SetInfo(
+                    inventoryItem.item.texture,
+                    inventoryItem.item.name,
+                    inventoryItem.item.weight,
+                    inventoryItem.item.marketValue
+                    );
+
+                if (inventoryItem.item.GetType().IsSubclassOf(typeof(DeteriorableItem)))
+                {
+                    uiItemTooltip.SetDeteriorationInfo((inventoryItem.item as DeteriorableItem).deteriorationLevel);
+                }
+                
+            }
         }
 
         /// <summary>
-        /// Inits <see cref="inventoryData"/>
+        /// <see cref="OnUseItem"/> handler, check the instance type class and runs PerformAction
         /// </summary>
-        private void PrepareInventoryData()
+        /// <param name="itemIndex"></param>
+        private void HandleUseItem(int itemIndex)
         {
-            inventoryData.Init();
+            InventoryItem inventoryItem = inventoryData.GetItemAt(itemIndex);
+
+            if (inventoryItem.item.GetType() == typeof(ConsumableItem))
+            {
+                ConsumableItem item = inventoryItem.item as ConsumableItem;
+                item.PerformAction();
+
+                RemoveItem(itemIndex);
+            }
         }
 
         public void Update()
@@ -98,23 +155,6 @@ namespace Inventory
             {
                 inventoryData.Remove(index);
                 if (index != -1) uiInventory.RemoveItem(index);
-            }
-        }
-
-        /// <summary>
-        /// <see cref="OnUseItem"/> handler, check the instance type class and runs PerformAction
-        /// </summary>
-        /// <param name="itemIndex"></param>
-        private void HandleUseItem(int itemIndex)
-        {
-            InventoryItem inventoryItem = inventoryData.GetItemAt(itemIndex);
-            
-            if (inventoryItem.item.GetType() == typeof(ConsumableItem))
-            {
-                ConsumableItem item = inventoryItem.item as ConsumableItem;
-                item.PerformAction();
-
-                RemoveItem(itemIndex);
             }
         }
     }
