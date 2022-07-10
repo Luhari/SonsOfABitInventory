@@ -28,6 +28,7 @@ namespace Inventory
         private bool m_showingItemTooltip = false;
 
         public event Action<InventoryItem> OnUseItem;
+        public event Action<string> OnActionPerformed;
 
         private void Awake()
         {
@@ -46,6 +47,12 @@ namespace Inventory
             inventoryData.Init();
             inventoryData.OnAccWeightUpdated += HandleOnAccWeightUpdated;
             inventoryData.OnCoinsUpdated += HandleOnCoinsUpdated;
+            inventoryData.OnActionPerformed += HandleOnActionPerformed;
+        }
+
+        private void HandleOnActionPerformed(string obj)
+        {
+            OnActionPerformed?.Invoke(obj);
         }
 
         private void HandleOnCoinsUpdated(float coins)

@@ -18,6 +18,7 @@ namespace Inventory.Model
         public float m_coins { get; private set; } = 0;
 
         public event Action<float> OnAccWeightUpdated, OnCoinsUpdated;
+        public event Action<string> OnActionPerformed;
 
         public void Init()
         {
@@ -57,6 +58,10 @@ namespace Inventory.Model
                         inventoryItem.setItem(item);
                         m_accWeight += item.m_weight;
                         OnAccWeightUpdated?.Invoke(m_accWeight);
+                        if (item is ConsumableItem)
+                        {
+                            (item as ConsumableItem).m_action.OnActionPerformed += HandleOnActionPerformed;
+                        }
                         return true;
                     }
                 }
@@ -74,10 +79,19 @@ namespace Inventory.Model
                     inventoryItem.setItem(item);
                     m_accWeight += item.m_weight;
                     OnAccWeightUpdated?.Invoke(m_accWeight);
+                    if (item is ConsumableItem)
+                    {
+                        (item as ConsumableItem).m_action.OnActionPerformed += HandleOnActionPerformed;
+                    }
                     return true;
                 }
             }
             return false;
+        }
+
+        private void HandleOnActionPerformed(string obj)
+        {
+            OnActionPerformed?.Invoke(obj);
         }
 
         /// <summary>
