@@ -71,6 +71,21 @@ namespace Inventory.Model
             return false;
         }
 
+        public bool AddItem(Item item, int index)
+        {
+            if (CanAddItem(item) && !IsInventoryFull())
+            {
+                if (inventoryItems[index].isEmpty)
+                {
+                    inventoryItems[index].setItem(item);
+                    accWeight += item.weight;
+                    OnAccWeightUpdated?.Invoke(accWeight);
+                    return true;
+                }
+            }
+            return false;
+        }
+
         /// <summary>
         /// Returns dictionary where the key is the inventory position and the value is the <see cref="InventoryItem"/>
         /// </summary>
@@ -89,7 +104,7 @@ namespace Inventory.Model
         {
             int index = FindItemIndex(itemToReplace);
             Remove(index);
-            inventoryItems[index].setItem(newItem);
+            AddItem(newItem, index);
         }
 
         public InventoryItem GetItemAt(int itemIndex)
