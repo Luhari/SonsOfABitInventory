@@ -16,9 +16,9 @@ namespace Inventory.UI
         IPointerEnterHandler, IPointerExitHandler, IDragHandler
     {
         // Image child of the SlotItemPrefab that will show the texture of the item
-        private Image image;
+        private Image m_image;
 
-        private bool empty = true;
+        private bool m_empty = true;
 
         public event Action<UIItem> OnRightMouseBtnClick,
             OnItemBeginDrag, OnItemDropped, OnItemEndDrag,
@@ -27,18 +27,18 @@ namespace Inventory.UI
 
         public void Awake()
         {
-            image = GetComponentsInChildren<Image>()[1];
+            m_image = GetComponentsInChildren<Image>()[1];
             EmptySlot();
         }
 
-        public bool isEmpty()
+        public bool IsEmpty()
         {
-            return empty;
+            return m_empty;
         }
 
         public Sprite GetSprite()
         {
-            return image.sprite;
+            return m_image.sprite;
         }
 
         /// <summary>
@@ -46,8 +46,8 @@ namespace Inventory.UI
         /// </summary>
         public void EmptySlot()
         {
-            image.enabled = false;
-            empty = true;
+            m_image.enabled = false;
+            m_empty = true;
         }
 
         /// <summary>
@@ -55,9 +55,9 @@ namespace Inventory.UI
         /// </summary>
         public void SetItemImage(Sprite sprite)
         {
-            image.sprite = sprite;
-            image.enabled = true;
-            empty = false;
+            m_image.sprite = sprite;
+            m_image.enabled = true;
+            m_empty = false;
         }
 
         /// <summary>
@@ -67,7 +67,7 @@ namespace Inventory.UI
         /// <param name="eventData"></param>
         public void OnPointerClick(PointerEventData eventData)
         {
-            if (empty) return;
+            if (m_empty) return;
 
             if (eventData.button == PointerEventData.InputButton.Right)
             {
@@ -77,7 +77,7 @@ namespace Inventory.UI
 
         public void OnBeginDrag(PointerEventData eventData)
         {
-            if (empty) return;
+            if (m_empty) return;
             OnItemBeginDrag?.Invoke(this);
         }
 
@@ -93,13 +93,13 @@ namespace Inventory.UI
 
         public void OnPointerEnter(PointerEventData eventData)
         {
-            if (empty) return;
+            if (m_empty) return;
             OnItemHoverStart?.Invoke(this);
         }
 
         public void OnPointerExit(PointerEventData eventData)
         {
-            if (empty) return;
+            if (m_empty) return;
             OnItemHoverEnd?.Invoke(this);
         }
 

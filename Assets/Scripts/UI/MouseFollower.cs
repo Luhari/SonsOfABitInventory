@@ -7,35 +7,35 @@ namespace Inventory.UI
 {
     public class MouseFollower : MonoBehaviour
     {
-        private Canvas canvas;
-        private Image item;
+        private Canvas m_canvas;
+        private Image m_item;
 
         public void Awake()
         {
-            canvas = transform.root.GetComponent<Canvas>();
-            item = GetComponentsInChildren<Image>()[1];
+            m_canvas = transform.root.GetComponent<Canvas>();
+            m_item = GetComponentsInChildren<Image>()[1];
         }
 
         public void Update()
         {
             Vector2 position;
             RectTransformUtility.ScreenPointToLocalPointInRectangle(
-               (RectTransform)canvas.transform,
+               (RectTransform)m_canvas.transform,
                 Input.mousePosition,
-                canvas.worldCamera,
+                m_canvas.worldCamera,
                 out position
                 );
-            transform.position = canvas.transform.TransformPoint(position);
+            transform.position = m_canvas.transform.TransformPoint(position);
         }
 
         public void SetImage(Sprite sprite)
         {
-            if (item == null)
+            if (m_item == null)
             {
-                item = GetComponentsInChildren<Image>()[1];
+                m_item = GetComponentsInChildren<Image>()[1];
             }
 
-            item.sprite = sprite;
+            m_item.sprite = sprite;
         }
 
         public void Show()

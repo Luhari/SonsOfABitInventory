@@ -11,8 +11,13 @@ namespace Inventory.UI
     /// </summary>
     public class UIInventory : MonoBehaviour
     {
-
-        public List<UIItem> uiItems = new List<UIItem>();
+        [SerializeField]
+        private TMPro.TextMeshProUGUI m_textCurrentWeight;
+        [SerializeField]
+        private TMPro.TextMeshProUGUI m_textLimitWeight;
+        [SerializeField]
+        private TMPro.TextMeshProUGUI m_textCoins;
+        private int m_currentlyDraggedItemIndex = -1;
 
         [SerializeField]
         private GameObject slotItemPrefab;
@@ -21,19 +26,13 @@ namespace Inventory.UI
         [SerializeField]
         private MouseFollower mouseFollower;
 
-        [SerializeField]
-        private TMPro.TextMeshProUGUI textCurrentWeight;
-        [SerializeField]
-        private TMPro.TextMeshProUGUI textLimitWeight;
-        [SerializeField]
-        private TMPro.TextMeshProUGUI textCoins;
+        private List<UIItem> m_uiItems = new List<UIItem>();
 
         public event Action<int> OnItemAction, OnStartDragging, OnItemHoverStart, OnItemHoverEnd, 
             OnItemRemoval, OnItemSold;
 
         public event Action<int, int> OnSwapItems;
 
-        private int currentlyDraggedItemIndex = -1;
 
         private void Awake()
         {
@@ -46,14 +45,14 @@ namespace Inventory.UI
         /// <param name="inventorySize"></param>
         public void InitUIInventory(int inventorySize, float limitWeight)
         {
-            textLimitWeight.text = limitWeight.ToString();
+            m_textLimitWeight.text = limitWeight.ToString();
 
             for (int i = 0; i < inventorySize; ++i)
             {
                 var slotItemInstance = Instantiate(slotItemPrefab);
                 slotItemInstance.transform.SetParent(slotsPanelTransform);
                 UIItem uiItem = slotItemInstance.GetComponentInChildren<UIItem>();
-                uiItems.Add(uiItem);
+                m_uiItems.Add(uiItem);
 
                 uiItem.OnRightMouseBtnClick += HandleItemAction;
                 uiItem.OnItemBeginDrag += HandleBeginDrag;
@@ -66,22 +65,22 @@ namespace Inventory.UI
 
         public void HandleItemDropOnSell()
         {
-            OnItemSold?.Invoke(currentlyDraggedItemIndex);
+            OnItemSold?.Invoke(m_currentlyDraggedItemIndex);
         }
 
         public void HandleItemDropOnTrash()
         {
-            OnItemRemoval?.Invoke(currentlyDraggedItemIndex);
+            OnItemRemoval?.Invoke(m_currentlyDraggedItemIndex);
         }
 
         private void HandleItemHoverEnd(UIItem item)
         {
-            OnItemHoverEnd?.Invoke(uiItems.FindIndex(i => i.GetInstanceID() == item.GetInstanceID()));
+            OnItemHoverEnd?.Invoke(m_uiItems.FindIndex(i => i.GetInstanceID() == item.GetInstanceID()));
         }
 
         private void HandleItemHoverStart(UIItem item)
         {
-            OnItemHoverStart?.Invoke(uiItems.FindIndex(i => i.GetInstanceID() == item.GetInstanceID()));
+            OnItemHoverStart?.Invoke(m_uiItems.FindIndex(i => i.GetInstanceID() == item.GetInstanceID()));
         }
 
         private void HandleEndDrag(UIItem item)
@@ -91,16 +90,16 @@ namespace Inventory.UI
 
         private void HandleSwapItems(UIItem item)
         {
-            int index = uiItems.FindIndex(i => i.GetInstanceID() == item.GetInstanceID());
+            int index = m_uiItems.FindIndex(i => i.GetInstanceID() == item.GetInstanceID());
             if (index == -1) return;
-            OnSwapItems?.Invoke(currentlyDraggedItemIndex, index);
+            OnSwapItems?.Invoke(m_currentlyDraggedItemIndex, index);
         }
 
         private void HandleBeginDrag(UIItem item)
         {
-            int index = uiItems.FindIndex(i => i.GetInstanceID() == item.GetInstanceID());
+            int index = m_uiItems.FindIndex(i => i.GetInstanceID() == item.GetInstanceID());
             if (index == -1) return;
-            currentlyDraggedItemIndex = index;
+            m_currentlyDraggedItemIndex = index;
             mouseFollower.SetImage(item.GetSprite());
             mouseFollower.Show();
             OnStartDragging?.Invoke(index);
@@ -109,22 +108,22 @@ namespace Inventory.UI
         private void ResetDraggedItem()
         {
             mouseFollower.Hide();
-            currentlyDraggedItemIndex = -1;
+            m_currentlyDraggedItemIndex = -1;
         }
 
         private void HandleItemAction(UIItem item)
         {
-            OnItemAction?.Invoke(uiItems.FindIndex(i => i.GetInstanceID() == item.GetInstanceID()));
+            OnItemAction?.Invoke(m_uiItems.FindIndex(i => i.GetInstanceID() == item.GetInstanceID()));
         }
 
         public void UpdateAccWeight(float value)
         {
-            textCurrentWeight.text = value.ToString();
+            m_textCurrentWeight.text = value.ToString();
         }
 
         public void UpdateCoins(float value)
         {
-            textCoins.text = value.ToString();
+            m_textCoins.text = value.ToString();
         }
 
         /// <summary>
@@ -134,10 +133,10 @@ namespace Inventory.UI
         /// <param name="sprite">Item that is in the slot</param>
         public void UpdateSlot(int slot, Sprite image)
         {
-            if (slot < uiItems.Count)
+            if (slot < m_uiItems.Count)
             {
-                if (image) uiItems[slot].SetItemImage(image);
-                else uiItems[slot].EmptySlot();
+                if (image) m_uiItems[slot].SetItemImage(image);
+                else m_uiItems[slot].EmptySlot();
             }
         }
 
@@ -148,7 +147,7 @@ namespace Inventory.UI
         /// <param name="item">Item to be added</param>
         public void AddNewItem(Sprite image)
         {
-            UpdateSlot(uiItems.FindIndex(i => i.isEmpty()), image);
+            UpdateSlot(m_uiItems.FindIndex(i => i.IsEmpty()), image);
         }
 
         /// <summary>
@@ -158,7 +157,7 @@ namespace Inventory.UI
         /// <param name="item">Item to remove</param>
         public void RemoveItem(UIItem item)
         {
-            UpdateSlot(uiItems.FindIndex(i => i.GetInstanceID() == item.GetInstanceID()), null);
+            UpdateSlot(m_uiItems.FindIndex(i => i.GetInstanceID() == item.GetInstanceID()), null);
         }
 
         /// <summary>

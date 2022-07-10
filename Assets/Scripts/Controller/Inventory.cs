@@ -25,10 +25,9 @@ namespace Inventory
         [SerializeField]
         private UIItemTooltip uiItemTooltip;
 
+        private bool m_showingItemTooltip = false;
+
         public event Action<InventoryItem> OnUseItem;
-
-        private bool showingItemTooltip = false;
-
 
         private void Awake()
         {
@@ -67,40 +66,40 @@ namespace Inventory
 
         public void OnForceNextLevelDeteriorationClick()
         {
-            foreach (InventoryItem item in inventoryData.getAllDeteriorableItems())
+            foreach (InventoryItem item in inventoryData.GetAllDeteriorableItems())
             {
-                HandleItemDeterioration(item.item as DeteriorableItem);
+                HandleItemDeterioration(item.m_item as DeteriorableItem);
             }
         }
 
         private void HandleItemDeterioration(DeteriorableItem item)
         {
-            if (item.deteriorOneLevel())
+            if (item.DeteriorOneLevel())
             {
                 deteriorationTimerController.AddToTrack(item);
-                uiItemTooltip.SetInfo(item.texture, item.name, item.weight, item.marketValue);
-                uiItemTooltip.SetDeteriorationInfo(item.deteriorationLevel);
-                uiInventory.UpdateSlot(inventoryData.FindItemIndex(item), item.texture);
+                uiItemTooltip.SetInfo(item.m_texture, item.m_name, item.m_weight, item.m_marketValue);
+                uiItemTooltip.SetDeteriorationInfo(item.m_deteriorationLevel);
+                uiInventory.UpdateSlot(inventoryData.FindItemIndex(item), item.m_texture);
             }
             else
             {
                 // in case of a consumable reaching the max level deterioration, replace it with a trash item
-                if (item.GetType() == typeof(ConsumableItem))
+                if (item is ConsumableItem)
                 {
-                    TrashItem trash = itemFactory.generateById(ItemId.TRASH) as TrashItem;
-                    trash.SetWeight(item.weight);
+                    TrashItem trash = itemFactory.GenerateById(ItemId.TRASH) as TrashItem;
+                    trash.SetWeight(item.m_weight);
 
                     inventoryData.ReplaceItem(item, trash);
-                    uiInventory.UpdateSlot(inventoryData.FindItemIndex(trash), trash.texture);
-                    uiItemTooltip.SetInfo(trash.texture, trash.name, trash.weight, trash.marketValue);
+                    uiInventory.UpdateSlot(inventoryData.FindItemIndex(trash), trash.m_texture);
+                    uiItemTooltip.SetInfo(trash.m_texture, trash.m_name, trash.m_weight, trash.m_marketValue);
                 }
 
                 // in case of a resource reaching the max level of deterioration, lose market value
-                if (item.GetType() == typeof(ResourceItem))
+                if (item is ResourceItem)
                 {
-                    (item as ResourceItem).loseMarketValueAtDeterioring();
-                    uiItemTooltip.SetInfo(item.texture, item.name, item.weight, item.marketValue);
-                    uiItemTooltip.SetDeteriorationInfo(item.deteriorationLevel);
+                    (item as ResourceItem).LoseMarketValueAtDeterioring();
+                    uiItemTooltip.SetInfo(item.m_texture, item.m_name, item.m_weight, item.m_marketValue);
+                    uiItemTooltip.SetDeteriorationInfo(item.m_deteriorationLevel);
                 }
             }
         }
@@ -110,7 +109,7 @@ namespace Inventory
         /// </summary>
         private void PrepareUI()
         {
-            uiInventory.InitUIInventory(inventoryData.getSize(), inventoryData.getLimitWeight());
+            uiInventory.InitUIInventory(inventoryData.m_size, inventoryData.m_limitWeight);
             uiInventory.OnItemAction += HandleUseItem;
             uiInventory.OnItemHoverStart += HandleItemHoverStart;
             uiInventory.OnItemHoverEnd += HandleItemHoverEnd;
@@ -138,8 +137,8 @@ namespace Inventory
         private void HandleSwapItems(int index1, int index2)
         {
             inventoryData.SwapItems(index1, index2);
-            uiInventory.UpdateSlot(index1, inventoryData.GetItemAt(index1).item?.texture);
-            uiInventory.UpdateSlot(index2, inventoryData.GetItemAt(index2).item?.texture);
+            uiInventory.UpdateSlot(index1, inventoryData.GetItemAt(index1).m_item?.m_texture);
+            uiInventory.UpdateSlot(index2, inventoryData.GetItemAt(index2).m_item?.m_texture);
         }
 
         private void HandleDragging(int obj)
@@ -149,37 +148,36 @@ namespace Inventory
 
         private void HandleItemHoverEnd(int itemIndex)
         {
-            if (showingItemTooltip)
+            if (m_showingItemTooltip)
             {
-                showingItemTooltip = false;
+                m_showingItemTooltip = false;
                 uiItemTooltip.Hide();
             }
         }
 
         private void HandleItemHoverStart(int itemIndex)
         {
-            if (!showingItemTooltip)
+            if (!m_showingItemTooltip)
             {
-                showingItemTooltip = true;
+                m_showingItemTooltip = true;
                 uiItemTooltip.Show();
                 InventoryItem inventoryItem = inventoryData.GetItemAt(itemIndex);
 
                 uiItemTooltip.SetInfo(
-                    inventoryItem.item.texture,
-                    inventoryItem.item.name,
-                    inventoryItem.item.weight,
-                    inventoryItem.item.marketValue
+                    inventoryItem.m_item.m_texture,
+                    inventoryItem.m_item.m_name,
+                    inventoryItem.m_item.m_weight,
+                    inventoryItem.m_item.m_marketValue
                     );
 
-                if (inventoryItem.item.GetType().IsSubclassOf(typeof(DeteriorableItem)))
+                if (inventoryItem.m_item is DeteriorableItem)
                 {
-                    uiItemTooltip.SetDeteriorationInfo((inventoryItem.item as DeteriorableItem).deteriorationLevel);
+                    uiItemTooltip.SetDeteriorationInfo((inventoryItem.m_item as DeteriorableItem).m_deteriorationLevel);
                 }
                 
-                if (inventoryItem.item is Weapon)
+                if (inventoryItem.m_item is Weapon)
                 {
-                    Debug.Log(inventoryItem.item);
-                    uiItemTooltip.SetDPSInfo((inventoryItem.item as Weapon).dps);
+                    uiItemTooltip.SetDPSInfo((inventoryItem.m_item as Weapon).m_dps);
                 }
             }
         }
@@ -192,10 +190,11 @@ namespace Inventory
         {
             InventoryItem inventoryItem = inventoryData.GetItemAt(itemIndex);
 
-            if (inventoryItem.item.GetType() == typeof(ConsumableItem))
+            if (inventoryItem.m_item is ConsumableItem)
             {
-                ConsumableItem item = inventoryItem.item as ConsumableItem;
+                ConsumableItem item = inventoryItem.m_item as ConsumableItem;
                 item.PerformAction();
+                deteriorationTimerController.StopTracking(item);
 
                 RemoveItem(itemIndex);
             }
@@ -219,15 +218,15 @@ namespace Inventory
 
         public void AddItem(ItemId id)
         {
-            AddItem(itemFactory.generateById(id));
+            AddItem(itemFactory.GenerateById(id));
         }
 
         public void AddItem(Item item)
         {
             if (inventoryData.AddItem(item))
             {
-                uiInventory.AddNewItem(item.texture);
-                if (item.GetType().IsSubclassOf(typeof(DeteriorableItem)))
+                uiInventory.AddNewItem(item.m_texture);
+                if (item is DeteriorableItem)
                 {
                     deteriorationTimerController.AddToTrack(item as DeteriorableItem);
                 }

@@ -11,33 +11,33 @@ namespace Inventory.Model
         void PerformAction();
     }
 
-    public class UseHealthPotion : IAction
+    public class RestoreLifeAction : IAction
     {
         public event Action<string> OnActionPerformed;
         private float amountHealed;
-        public UseHealthPotion(float amountHealed)
+        public RestoreLifeAction(float amountHealed)
         {
             this.amountHealed = amountHealed;
         }
 
         public void PerformAction()
         {
-            Debug.Log($"Healed {amountHealed} HP");
+            OnActionPerformed?.Invoke($"Healed {amountHealed} HP");
         }
     }
 
-    public class UseManaPotion : IAction
+    public class RestoreManaAction : IAction
     {
         public event Action<string> OnActionPerformed;
         private float amountRecovered;
-        public UseManaPotion(float amountRecovered)
+        public RestoreManaAction(float amountRecovered)
         {
             this.amountRecovered = amountRecovered;
         }
 
         public void PerformAction()
         {
-            Debug.Log($"Recovered {amountRecovered} MP");
+            OnActionPerformed?.Invoke($"Healed {amountRecovered} HP");
         }
     }
 

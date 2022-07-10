@@ -11,12 +11,6 @@ namespace Inventory.Model
     /// </summary>
     public class TrashItem : Item
     {
-        public override ItemId id { get; protected set; }
-        public override string name { get; protected set; }
-        public override float marketValue { get; protected set; }
-        public override float weight { get; protected set; }
-        public override Sprite texture { get; protected set; }
-
         /// <summary>
         /// Constructor of a TrashItem
         /// </summary>
@@ -25,20 +19,20 @@ namespace Inventory.Model
         /// <param name="weight">Weight of the item</param>
         public TrashItem(ItemId id, string name, float weight)
         {
-            this.id = id;
-            this.name = name;
-            this.weight = weight;
-            marketValue = 0;
-            texture = Resources.Load<Sprite>("Sprites/Items/trash");
+            m_id = id;
+            m_name = name;
+            m_weight = weight;
+            m_marketValue = 0;
+            m_texture = Resources.Load<Sprite>("Sprites/Items/trash");
         }
 
         public TrashItem(TrashItem item) 
         {
-            this.id = item.id;
-            this.name = item.name;
-            this.weight = item.weight;
-            this.marketValue = item.marketValue;
-            this.texture = item.texture;
+            m_id = item.m_id;
+            m_name = item.m_name;
+            m_weight = item.m_weight;
+            m_marketValue = item.m_marketValue;
+            m_texture = item.m_texture;
         }
 
         public override Item Clone()
@@ -48,7 +42,7 @@ namespace Inventory.Model
 
         public void SetWeight(float weight)
         {
-            this.weight = weight;
+            m_weight = weight;
         }
     }
 }

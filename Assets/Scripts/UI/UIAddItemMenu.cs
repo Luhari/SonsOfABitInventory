@@ -11,14 +11,14 @@ namespace Inventory.UI
     /// </summary>
     public class UIAddItemMenu : MonoBehaviour
     {
-
-        public event Action<ItemId> OnAddItem;
-
         [SerializeField]
         private ItemFactory itemFactory;
 
         [SerializeField]
         private GameObject addButtonPrefab;
+
+        public event Action<ItemId> OnAddItem;
+
 
         private void Awake()
         {

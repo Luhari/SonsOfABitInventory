@@ -12,38 +12,30 @@ namespace Inventory.Model
     public class InventorySO : ScriptableObject
     {
         private List<InventoryItem> inventoryItems;
-        [field: SerializeField]
-        private int size { get; set; } = 24;
-        [field: SerializeField]
-        private float limitWeight { get; set; } = 100;
-
-        private float accWeight { get; set; } = 0;
-        private float coins { get; set; } = 0;
-
-        public int getSize() => size;
-        public float getLimitWeight() => limitWeight;
-        public float getAccWeight() => accWeight;
-        public float getCoins() => coins;
+        public int m_size { get; private set; } = 24;
+        public float m_limitWeight { get; private set; } = 100;
+        public float m_accWeight { get; private set; } = 0;
+        public float m_coins { get; private set; } = 0;
 
         public event Action<float> OnAccWeightUpdated, OnCoinsUpdated;
 
         public void Init()
         {
-            accWeight = 0;
-            coins = 0;
+            m_accWeight = 0;
+            m_coins = 0;
 
             inventoryItems = new List<InventoryItem>();
-            for (int i = 0; i < size; ++i)
+            for (int i = 0; i < m_size; ++i)
             {
                 inventoryItems.Add(new InventoryItem());
             }
         }
 
-        public List<InventoryItem> getAllDeteriorableItems()
+        public List<InventoryItem> GetAllDeteriorableItems()
         {
             return inventoryItems.FindAll(item =>
                 !item.isEmpty &&
-                item.item.GetType().IsSubclassOf(typeof(DeteriorableItem))
+                item.m_item is DeteriorableItem
                 );
         }
 
@@ -59,11 +51,12 @@ namespace Inventory.Model
             {
                 for (int i = 0; i < inventoryItems.Count; i++)
                 {
-                    if (inventoryItems[i].isEmpty)
+                    InventoryItem inventoryItem = inventoryItems[i];
+                    if (inventoryItem.isEmpty)
                     {
-                        inventoryItems[i].setItem(item);
-                        accWeight += item.weight;
-                        OnAccWeightUpdated?.Invoke(accWeight);
+                        inventoryItem.setItem(item);
+                        m_accWeight += item.m_weight;
+                        OnAccWeightUpdated?.Invoke(m_accWeight);
                         return true;
                     }
                 }
@@ -75,11 +68,12 @@ namespace Inventory.Model
         {
             if (CanAddItem(item) && !IsInventoryFull())
             {
-                if (inventoryItems[index].isEmpty)
+                InventoryItem inventoryItem = inventoryItems[index];
+                if (inventoryItem.isEmpty)
                 {
-                    inventoryItems[index].setItem(item);
-                    accWeight += item.weight;
-                    OnAccWeightUpdated?.Invoke(accWeight);
+                    inventoryItem.setItem(item);
+                    m_accWeight += item.m_weight;
+                    OnAccWeightUpdated?.Invoke(m_accWeight);
                     return true;
                 }
             }
@@ -95,7 +89,8 @@ namespace Inventory.Model
             Dictionary<int, InventoryItem> items = new Dictionary<int, InventoryItem>();
             for (int i = 0; i < inventoryItems.Count; ++i)
             {
-                if (!inventoryItems[i].isEmpty) items[i] = inventoryItems[i];
+                InventoryItem inventoryItem = inventoryItems[i];
+                if (!inventoryItem.isEmpty) items[i] = inventoryItem;
             }
             return items;
         }
@@ -114,16 +109,16 @@ namespace Inventory.Model
 
         public Item FindItem(Item itemToFind)
         {
-            return inventoryItems.Find(item => item.item.Equals(itemToFind)).item;
+            return inventoryItems.Find(item => item.m_item.Equals(itemToFind)).m_item;
         }
         public int FindItemIndex(Item itemToFind)
         {
-            return inventoryItems.FindIndex(item => item.item.Equals(itemToFind));
+            return inventoryItems.FindIndex(item => item.m_item.Equals(itemToFind));
         }
 
         public int Remove(Item itemToFind)
         {
-            int index = inventoryItems.FindIndex(item => item.item.Equals(itemToFind));
+            int index = inventoryItems.FindIndex(item => item.m_item.Equals(itemToFind));
             Remove(index);
             return index;
         }
@@ -131,15 +126,16 @@ namespace Inventory.Model
         public void Remove(int index)
         {
             if (index == -1) return;
+            InventoryItem inventoryItem = inventoryItems[index];
 
-            accWeight -= inventoryItems[index].item.weight;
-            OnAccWeightUpdated?.Invoke(accWeight);
-            inventoryItems[index].setItem(null);
+            m_accWeight -= inventoryItem.m_item.m_weight;
+            OnAccWeightUpdated?.Invoke(m_accWeight);
+            inventoryItem.setItem(null);
         }
 
         public bool Sell(Item itemToFind)
         {
-            int index = inventoryItems.FindIndex(item => item.item.Equals(itemToFind));
+            int index = inventoryItems.FindIndex(item => item.m_item.Equals(itemToFind));
             return Sell(index);
         }
 
@@ -147,14 +143,16 @@ namespace Inventory.Model
         {
             if (index == -1) return false;
 
-            if (inventoryItems[index].item.GetType() == typeof(Weapon) ||
-                inventoryItems[index].item.GetType() == typeof(ResourceItem))
+            InventoryItem inventoryItem = inventoryItems[index];
+
+            if (inventoryItem.m_item is Weapon ||
+                inventoryItem.m_item is ResourceItem)
             {
-                accWeight -= inventoryItems[index].item.weight;
-                OnAccWeightUpdated?.Invoke(accWeight);
-                coins += inventoryItems[index].item.marketValue;
-                OnCoinsUpdated?.Invoke(coins);
-                inventoryItems[index].setItem(null);
+                m_accWeight -= inventoryItem.m_item.m_weight;
+                OnAccWeightUpdated?.Invoke(m_accWeight);
+                m_coins += inventoryItem.m_item.m_marketValue;
+                OnCoinsUpdated?.Invoke(m_coins);
+                inventoryItem.setItem(null);
 
                 return true;
             }
@@ -162,7 +160,7 @@ namespace Inventory.Model
             return false;
         }
 
-        private bool CanAddItem(Item item) => item.weight + accWeight <= limitWeight;
+        private bool CanAddItem(Item item) => item.m_weight + m_accWeight <= m_limitWeight;
         private bool IsInventoryFull() => inventoryItems.FindIndex(item => item.isEmpty) == -1;
 
 
@@ -172,10 +170,10 @@ namespace Inventory.Model
 
             InventoryItem item2 = inventoryItems[index2];
             
-            Item aux = item2.item;
+            Item aux = item2.m_item;
 
-            inventoryItems[index2].setItem(item1.item);
-            inventoryItems[index1].setItem(aux);
+            item2.setItem(item1.m_item);
+            item1.setItem(aux);
         }
     }
 
@@ -184,22 +182,22 @@ namespace Inventory.Model
     /// </summary>
     public class InventoryItem
     {
-        public Item item;
-        public bool isEmpty => item == null;
+        public Item m_item;
+        public bool isEmpty => m_item == null;
 
         public InventoryItem()
         {
-            this.item = null;
+            m_item = null;
         }
 
         public InventoryItem(Item item)
         {
-            this.item = item;
+            m_item = item;
         }
 
         public void setItem(Item item)
         {
-            this.item = item;
+            m_item = item;
         }
     }
 }

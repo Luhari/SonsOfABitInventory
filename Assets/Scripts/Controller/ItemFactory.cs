@@ -30,7 +30,7 @@ namespace Inventory
         /// <summary>
         /// Contains all unique <see cref="Item"/>
         /// </summary>
-        public List<Item> database;
+        private List<Item> m_database;
 
         public event Action<List<(ItemId, Sprite)>> OnDatabaseBuilt;
 
@@ -44,7 +44,7 @@ namespace Inventory
         /// </summary>
         void BuildDatabase()
         {
-            database = new List<Item>()
+            m_database = new List<Item>()
             {
                 new Weapon(
                     id: ItemId.SWORD, name : "Sword", weight: 10f, marketValue: 1f, texture: "sword",
@@ -54,11 +54,11 @@ namespace Inventory
                 new ConsumableItem(id: ItemId.HEALTH_POTION, name: "Health Potion", weight: 3f, texture: "healthPotion0",
                     timeBetweenDeteriorationLevel: 1f, 
                     maxDeteriorationLevel: 3, 
-                    action: new UseHealthPotion(10f)),
+                    action: new RestoreLifeAction(10f)),
                 new ConsumableItem(id: ItemId.MANA_POTION, name: "Mana Potion", weight: 1f, texture: "manaPotion0",
                     timeBetweenDeteriorationLevel: 3f,
                     maxDeteriorationLevel: 3, 
-                    action: new UseManaPotion(1f)),
+                    action: new RestoreManaAction(1f)),
                 new ResourceItem(id: ItemId.ARROW, name: "Arrow", weight: 1f, marketValue: 10f, texture: "arrow0", 
                     timeBetweenDeteriorLevel: 60f, 
                     marketValueLostAtDeterioring: 1f, 
@@ -70,13 +70,13 @@ namespace Inventory
                 new TrashItem(id: ItemId.TRASH, name: "Trash", weight: 1f),
             };
 
-            List<(ItemId, Sprite)> addMenu = database.ConvertAll(new Converter<Item, (ItemId itemId, Sprite sprite)>(ItemToItemIdSprite));
+            List<(ItemId, Sprite)> addMenu = m_database.ConvertAll(new Converter<Item, (ItemId itemId, Sprite sprite)>(ItemToItemIdSprite));
             OnDatabaseBuilt?.Invoke(addMenu);
         }
 
-        public Item generateById(ItemId id)
+        public Item GenerateById(ItemId id)
         {
-            Item databaseItem =  database.Find(item => item.id == id);
+            Item databaseItem =  m_database.Find(item => item.m_id == id);
 
             return databaseItem.Clone();
         }
@@ -88,7 +88,7 @@ namespace Inventory
         /// <returns></returns>
         private (ItemId, Sprite) ItemToItemIdSprite(Item item)
         {
-            return (item.id, item.texture);
+            return (item.m_id, item.m_texture);
         }
     }
 }

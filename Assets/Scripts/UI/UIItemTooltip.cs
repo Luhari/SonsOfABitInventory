@@ -6,23 +6,24 @@ namespace Inventory.UI
 {
     public class UIItemTooltip : MonoBehaviour
     {
-        private Canvas canvas;
         [SerializeField]
-        private UIItem item;
+        private UIItem m_item;
         [SerializeField]
-        private GameObject nameLabel;
+        private GameObject m_nameLabel;
         [SerializeField]
-        private GameObject weightLabel;
+        private GameObject m_weightLabel;
         [SerializeField]
-        private GameObject marketValueLabel;
+        private GameObject m_marketValueLabel;
         [SerializeField]
-        private GameObject deteriorationLevelLabel;
+        private GameObject m_deteriorationLevelLabel;
         [SerializeField]
-        private GameObject dpsLabel;
+        private GameObject m_dpsLabel;
+
+        private Canvas m_canvas;
 
         private void Awake()
         {
-            canvas = transform.root.GetComponent<Canvas>();
+            m_canvas = transform.root.GetComponent<Canvas>();
         }
 
         private void Update()
@@ -32,12 +33,12 @@ namespace Inventory.UI
                 Vector2 position;
 
                 RectTransformUtility.ScreenPointToLocalPointInRectangle(
-                        (RectTransform)canvas.transform,
+                        (RectTransform)m_canvas.transform,
                         Input.mousePosition,
-                        canvas.worldCamera,
+                        m_canvas.worldCamera,
                         out position
                     );
-                transform.position = canvas.transform.TransformPoint(position + new Vector2(10, 0));
+                transform.position = m_canvas.transform.TransformPoint(position + new Vector2(10, 0));
             }
         }
 
@@ -52,25 +53,25 @@ namespace Inventory.UI
         {
             if (gameObject.activeSelf)
             {
-                item.SetItemImage(sprite);
-                nameLabel.GetComponent<TMPro.TextMeshProUGUI>().text = name;
-                SetStatLabel(weightLabel, weight.ToString());
-                SetStatLabel(marketValueLabel, marketValue.ToString());
+                m_item.SetItemImage(sprite);
+                m_nameLabel.GetComponent<TMPro.TextMeshProUGUI>().text = name;
+                SetStatLabel(m_weightLabel, weight.ToString());
+                SetStatLabel(m_marketValueLabel, marketValue.ToString());
 
-                deteriorationLevelLabel.SetActive(false);
+                m_deteriorationLevelLabel.SetActive(false);
             }
         }
 
         public void SetDeteriorationInfo(int deteriorationLevel)
         {
-            deteriorationLevelLabel.SetActive(true);
-            SetStatLabel(deteriorationLevelLabel, deteriorationLevel.ToString());
+            m_deteriorationLevelLabel.SetActive(true);
+            SetStatLabel(m_deteriorationLevelLabel, deteriorationLevel.ToString());
         }
 
         public void SetDPSInfo(float dps)
         {
-            dpsLabel.SetActive(true);
-            SetStatLabel(dpsLabel, dps.ToString());
+            m_dpsLabel.SetActive(true);
+            SetStatLabel(m_dpsLabel, dps.ToString());
         }
 
         private void SetStatLabel(GameObject label, string value)
@@ -86,8 +87,8 @@ namespace Inventory.UI
         public void Hide()
         {
             gameObject.SetActive(false);
-            deteriorationLevelLabel.SetActive(false);
-            dpsLabel.SetActive(false);
+            m_deteriorationLevelLabel.SetActive(false);
+            m_dpsLabel.SetActive(false);
         }
     }
 }

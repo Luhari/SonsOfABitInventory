@@ -10,13 +10,7 @@ namespace Inventory.Model
     /// </summary>
     public class Weapon : Item
     {
-        public override ItemId id { get; protected set; }
-        public override string name { get; protected set; }
-        public override float marketValue { get; protected set; }
-        public override float weight { get; protected set; }
-        public override Sprite texture { get; protected set; }
-
-        public float dps { get; private set; }
+        public float m_dps { get; private set; }
 
         /// <summary>
         /// Constructor of a weapon
@@ -29,22 +23,22 @@ namespace Inventory.Model
         /// <param name="marketValue">Market value the weapon</param>
         public Weapon(ItemId id, string name, float weight, float dps, string texture, float marketValue) 
         {
-            this.id = id;
-            this.name = name;
-            this.weight = weight;
-            this.dps = dps;
-            this.marketValue = marketValue;
-            this.texture = Resources.Load<Sprite>("Sprites/Items/" + texture);
+            m_id = id;
+            m_name = name;
+            m_weight = weight;
+            m_dps = dps;
+            m_marketValue = marketValue;
+            m_texture = Resources.Load<Sprite>("Sprites/Items/" + texture);
         }
 
         public Weapon(Weapon item)
         {
-            this.id = item.id;
-            this.name = item.name;
-            this.weight = item.weight;
-            this.dps = item.dps;
-            this.marketValue = item.marketValue;
-            this.texture = item.texture;
+            m_id = item.m_id;
+            m_name = item.m_name;
+            m_weight = item.m_weight;
+            m_dps = item.m_dps;
+            m_marketValue = item.m_marketValue;
+            m_texture = item.m_texture;
         }
 
         public override Item Clone()

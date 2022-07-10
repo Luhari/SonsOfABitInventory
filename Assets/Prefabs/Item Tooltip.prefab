@@ -1064,12 +1064,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f42aa742dd6b51f4883fd241d394055d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  item: {fileID: 2893921106974222347}
-  nameLabel: {fileID: 2435758286064097739}
-  weightLabel: {fileID: 569637234174414427}
-  marketValueLabel: {fileID: 3902248509199152416}
-  deteriorationLevelLabel: {fileID: 6164279534515011893}
-  dpsLabel: {fileID: 1309796106015668332}
+  m_item: {fileID: 2893921106974222347}
+  m_nameLabel: {fileID: 2435758286064097739}
+  m_weightLabel: {fileID: 569637234174414427}
+  m_marketValueLabel: {fileID: 3902248509199152416}
+  m_deteriorationLevelLabel: {fileID: 6164279534515011893}
+  m_dpsLabel: {fileID: 1309796106015668332}
 --- !u!1 &5470310043298484134
 GameObject:
   m_ObjectHideFlags: 0

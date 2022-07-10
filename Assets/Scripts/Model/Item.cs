@@ -11,11 +11,11 @@ namespace Inventory.Model
     /// </summary>
     public abstract class Item
     {
-        public abstract ItemId id { get; protected set; }
-        public abstract string name { get; protected set; }
-        public abstract float weight { get; protected set; }
-        public abstract float marketValue { get; protected set; }
-        public abstract Sprite texture { get; protected set; }
+        public ItemId m_id { get; protected set; }
+        public string m_name { get; protected set; }
+        public float m_weight { get; protected set; }
+        public float m_marketValue { get; protected set; }
+        public Sprite m_texture { get; protected set; }
 
         public abstract Item Clone();
     }

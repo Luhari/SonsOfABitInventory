@@ -225,13 +225,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ab0d95cc021cb0140a167bf23ecf6431, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  uiItems: []
+  m_textCurrentWeight: {fileID: 3059259204400332025}
+  m_textLimitWeight: {fileID: 2064035039459332539}
+  m_textCoins: {fileID: 6373097451007250220}
   slotItemPrefab: {fileID: 8242515120537644913, guid: ec0e9c5efe2a6494e91a412434d48f53, type: 3}
   slotsPanelTransform: {fileID: 1925826516024322645}
   mouseFollower: {fileID: 1051353556110059795}
-  textCurrentWeight: {fileID: 3059259204400332025}
-  textLimitWeight: {fileID: 2064035039459332539}
-  textCoins: {fileID: 6373097451007250220}
 --- !u!1 &1925826515573435962
 GameObject:
   m_ObjectHideFlags: 0

@@ -11,7 +11,7 @@ namespace Inventory.Model
     /// </summary>
     public class ConsumableItem : DeteriorableItem
     {
-        private IAction action;
+        public IAction m_action { get; private set; }
 
         /// <summary>
         /// Constructor of ConsumableItem
@@ -25,17 +25,17 @@ namespace Inventory.Model
             float timeBetweenDeteriorationLevel, int maxDeteriorationLevel, IAction action) : 
             base(id, name, weight, timeBetweenDeteriorationLevel, maxDeteriorationLevel)
         {
-            marketValue = 0;
-            this.texture = Resources.Load<Sprite>("Sprites/Items/" + texture);
-            this.action = action;
+            m_marketValue = 0;
+            m_texture = Resources.Load<Sprite>("Sprites/Items/" + texture);
+            m_action = action;
         }
 
         public ConsumableItem(ConsumableItem item) : 
-            base(item.id, item.name, item.weight, item.timeBetweenDeteriorationLevel, item.maxDeteriorationLevel)
+            base(item.m_id, item.m_name, item.m_weight, item.m_timeBetweenDeteriorationLevel, item.m_maxDeteriorationLevel)
         {
-            this.texture = item.texture;
-            this.marketValue = item.marketValue;
-            this.action = item.action;
+            m_texture = item.m_texture;
+            m_marketValue = item.m_marketValue;
+            m_action = item.m_action;
         }
 
         public override Item Clone()
@@ -48,7 +48,7 @@ namespace Inventory.Model
         /// </summary>
         public void PerformAction()
         {
-            action?.PerformAction();
+            m_action?.PerformAction();
         }
     }
 }

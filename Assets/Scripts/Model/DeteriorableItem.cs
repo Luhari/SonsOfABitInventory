@@ -11,22 +11,16 @@ namespace Inventory.Model
     /// </summary>
     public class DeteriorableItem : Item
     {
-        public override ItemId id { get; protected set; }
-        public override string name { get; protected set; }
-        public override float marketValue { get; protected set; }
-        public override float weight { get; protected set; }
-        public override Sprite texture { get; protected set; }
-
         /// <summary>
         /// Current deterioration level
         /// </summary>
-        public int deteriorationLevel { get; protected set; }
+        public int m_deteriorationLevel { get; protected set; }
         /// <summary>
         /// Time in seconds between levels of deterioriation
         /// </summary>
-        public float timeBetweenDeteriorationLevel { get; protected set; }
+        public float m_timeBetweenDeteriorationLevel { get; protected set; }
 
-        public int maxDeteriorationLevel { get; protected set; }
+        public int m_maxDeteriorationLevel { get; protected set; }
 
         public event Action<DeteriorableItem> OnDeterioration;
 
@@ -40,30 +34,30 @@ namespace Inventory.Model
         /// <param name="maxDeteriorationLevel">Max deterioration level</param>
         public DeteriorableItem(ItemId id, string name, float weight, float timeBetweenDeteriorationLevel, int maxDeteriorationLevel, float marketValue = 0)
         {
-            this.id = id;
-            this.name = name;
-            this.weight = weight;
-            deteriorationLevel = 0;
-            this.timeBetweenDeteriorationLevel = timeBetweenDeteriorationLevel;
-            this.maxDeteriorationLevel = maxDeteriorationLevel;
-            this.marketValue = marketValue;
+            m_id = id;
+            m_name = name;
+            m_weight = weight;
+            m_deteriorationLevel = 0;
+            m_timeBetweenDeteriorationLevel = timeBetweenDeteriorationLevel;
+            m_maxDeteriorationLevel = maxDeteriorationLevel;
+            m_marketValue = marketValue;
         }
 
         /// <summary>
         /// Forces one deterioration level and updates the texture of the item and returns true
         /// if the item can deterior another level
         /// </summary>
-        public bool deteriorOneLevel()
+        public bool DeteriorOneLevel()
         {
-            if (++deteriorationLevel <= maxDeteriorationLevel)
+            if (++m_deteriorationLevel <= m_maxDeteriorationLevel)
             {
-                Sprite currentTexture = this.texture;
+                Sprite currentTexture = m_texture;
 
-                this.texture = Resources.Load<Sprite>("Sprites/Items/" + currentTexture.name.Substring(0, currentTexture.name.Length -1) + deteriorationLevel);
+                m_texture = Resources.Load<Sprite>("Sprites/Items/" + currentTexture.name.Substring(0, currentTexture.name.Length -1) + m_deteriorationLevel);
 
                 // OnDeterioration?.Invoke(this);
             }
-            return deteriorationLevel < maxDeteriorationLevel;
+            return m_deteriorationLevel < m_maxDeteriorationLevel;
         }
 
         public override Item Clone()
