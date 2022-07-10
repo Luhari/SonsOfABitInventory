@@ -176,6 +176,11 @@ namespace Inventory
                     uiItemTooltip.SetDeteriorationInfo((inventoryItem.item as DeteriorableItem).deteriorationLevel);
                 }
                 
+                if (inventoryItem.item is Weapon)
+                {
+                    Debug.Log(inventoryItem.item);
+                    uiItemTooltip.SetDPSInfo((inventoryItem.item as Weapon).dps);
+                }
             }
         }
 

@@ -17,7 +17,8 @@ namespace Inventory.UI
         private GameObject marketValueLabel;
         [SerializeField]
         private GameObject deteriorationLevelLabel;
-
+        [SerializeField]
+        private GameObject dpsLabel;
 
         private void Awake()
         {
@@ -66,6 +67,12 @@ namespace Inventory.UI
             SetStatLabel(deteriorationLevelLabel, deteriorationLevel.ToString());
         }
 
+        public void SetDPSInfo(float dps)
+        {
+            dpsLabel.SetActive(true);
+            SetStatLabel(dpsLabel, dps.ToString());
+        }
+
         private void SetStatLabel(GameObject label, string value)
         {
             label.GetComponentsInChildren<TMPro.TextMeshProUGUI>()[1].text = value;
@@ -79,6 +86,8 @@ namespace Inventory.UI
         public void Hide()
         {
             gameObject.SetActive(false);
+            deteriorationLevelLabel.SetActive(false);
+            dpsLabel.SetActive(false);
         }
     }
 }
