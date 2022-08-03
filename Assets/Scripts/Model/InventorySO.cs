@@ -58,9 +58,9 @@ namespace Inventory.Model
                         inventoryItem.setItem(item);
                         m_accWeight += item.m_weight;
                         OnAccWeightUpdated?.Invoke(m_accWeight);
-                        if (item is ConsumableItem)
+                        if (item is IConsumable)
                         {
-                            (item as ConsumableItem).m_action.OnActionPerformed += HandleOnActionPerformed;
+                            (item as IConsumable).action.OnActionPerformed += HandleOnActionPerformed;
                         }
                         return true;
                     }
@@ -79,9 +79,9 @@ namespace Inventory.Model
                     inventoryItem.setItem(item);
                     m_accWeight += item.m_weight;
                     OnAccWeightUpdated?.Invoke(m_accWeight);
-                    if (item is ConsumableItem)
+                    if (item is IConsumable)
                     {
-                        (item as ConsumableItem).m_action.OnActionPerformed += HandleOnActionPerformed;
+                        (item as IConsumable).action.OnActionPerformed += HandleOnActionPerformed;
                     }
                     return true;
                 }

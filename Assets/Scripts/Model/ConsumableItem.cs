@@ -9,9 +9,11 @@ namespace Inventory.Model
     /// Subclass of <see cref="DeteriorableItem"/> that can be used, can't be sold, has no value and when it completely deteriorates,
     /// it transforms into <see cref="TrashItem"/>
     /// </summary>
-    public class ConsumableItem : DeteriorableItem
+    public class ConsumableItem : DeteriorableItem, IConsumable
     {
-        public IAction m_action { get; private set; }
+        private IAction m_action;
+
+        public IAction action { get => m_action; }
 
         /// <summary>
         /// Constructor of ConsumableItem
@@ -43,12 +45,16 @@ namespace Inventory.Model
             return new ConsumableItem(this);
         }
 
-        /// <summary>
-        /// Performs <see cref="action"/> at using the consumable
-        /// </summary>
         public void PerformAction()
         {
             m_action?.PerformAction();
         }
+    }
+
+    interface IConsumable
+    {
+        public IAction action { get; }
+
+        public void PerformAction();
     }
 }
